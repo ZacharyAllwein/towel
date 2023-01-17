@@ -6,6 +6,6 @@ fn vec_functor() {
 }
 
 #[test]
-fn opt_functor(){
+fn opt_functor() {
     assert_eq!(Some(1).fmap(|x| x.to_string()), Some("1".into()));
 }

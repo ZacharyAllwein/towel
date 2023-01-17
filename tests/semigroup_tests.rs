@@ -6,6 +6,9 @@ fn vec_combine() {
 }
 
 #[test]
-fn opt_combine(){
-    assert_eq!(Some(vec![1, 2]).combine(&Some(vec![3, 4])), Some(vec![1, 2, 3, 4]));
+fn opt_combine() {
+    assert_eq!(
+        Some(vec![1, 2]).combine(&Some(vec![3, 4])),
+        Some(vec![1, 2, 3, 4])
+    );
 }

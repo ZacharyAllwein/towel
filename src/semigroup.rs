@@ -16,7 +16,7 @@ impl<A: Semigroup + Clone> Semigroup for Option<A> {
         match (self, other) {
             (None, x) => x.clone(),
             (x, None) => x.clone(),
-            (Some(x), Some(y)) => Some(x.combine(&y))
+            (Some(x), Some(y)) => Some(x.combine(&y)),
         }
     }
 }
