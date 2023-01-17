@@ -9,3 +9,14 @@ impl<A: Clone> Semigroup for Vec<A> {
         new
     }
 }
+
+//semigroup for option relies on inner semigroup for A
+impl<A: Semigroup + Clone> Semigroup for Option<A> {
+    fn combine(&self, other: &Self) -> Self {
+        match (self, other) {
+            (None, x) => x.clone(),
+            (x, None) => x.clone(),
+            (Some(x), Some(y)) => Some(x.combine(&y))
+        }
+    }
+}

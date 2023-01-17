@@ -13,3 +13,10 @@ impl<A: Clone> Monoid for Vec<A> {
         vec![]
     }
 }
+
+
+impl<A: Semigroup + Clone> Monoid for Option<A>{
+    fn mempty() -> Self {
+        None
+    }
+}
