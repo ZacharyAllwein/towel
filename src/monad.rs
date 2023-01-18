@@ -1,7 +1,7 @@
 use crate::applicative::Applicative;
 use crate::functor::Functor;
 
-pub trait Monad<A>: Applicative<A> {
+pub trait Monad<'a, A>: Applicative<'a, A> {
     type MHKT<B>;
 
     fn ret(a: A) -> Self
@@ -15,7 +15,7 @@ pub trait Monad<A>: Applicative<A> {
 }
 
 //basically a flat map for vec
-impl<A: 'static> Monad<A> for Vec<A> {
+impl<'a, A: 'a> Monad<'a, A> for Vec<A> {
     type MHKT<B> = Vec<B>;
 
     fn bind<B, F: Fn(&A) -> Self::MHKT<B>>(&self, f: F) -> Self::MHKT<B> {
@@ -24,7 +24,7 @@ impl<A: 'static> Monad<A> for Vec<A> {
 }
 
 //map value inside Option to Option then reduce structure
-impl<A> Monad<A> for Option<A> {
+impl<'a, A: 'a> Monad<'a, A> for Option<A> {
     type MHKT<B> = Option<B>;
 
     fn bind<B, F: Fn(&A) -> Self::MHKT<B>>(&self, f: F) -> Self::MHKT<B> {
