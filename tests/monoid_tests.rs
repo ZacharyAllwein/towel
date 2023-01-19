@@ -1,4 +1,4 @@
-use towel::monoid::Monoid;
+use towel::prelude::*;
 
 #[test]
 fn vec_mempty() {

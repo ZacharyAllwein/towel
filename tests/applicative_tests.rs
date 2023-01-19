@@ -1,5 +1,4 @@
-use towel::applicative::Applicative;
-use towel::functor::Functor;
+use towel::prelude::*;
 
 fn app_3(s: &String) -> String {
     s.clone() + "3"

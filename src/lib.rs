@@ -1,17 +1,13 @@
-mod data_structures;
-mod traits;
-
-
-pub use data_structures::*;
-pub use traits::*;
+pub mod data_structures;
+pub mod traits;
 
 pub mod prelude {
     use super::*;
-    pub use applicative::Applicative;
-    pub use functor::Functor;
-    pub use monad::Monad;
-    pub use monoid::Monoid;
-    pub use semigroup::Semigroup;
-    pub use state::State;
-    pub use cons::Cons;
+    pub use traits::Applicative;
+    pub use traits::Functor;
+    pub use traits::Monad;
+    pub use traits::Monoid;
+    pub use traits::Semigroup;
+    pub use data_structures::State;
+    pub use traits::Cons;
 }

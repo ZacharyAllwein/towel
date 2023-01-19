@@ -34,3 +34,13 @@ impl<'a, A: 'a + Clone, B: 'a> Applicative<'a, B> for Sum<A, B>{
         }
     }
 }
+
+impl<'a, A: 'a + Clone, B: 'a> Monad<'a, B> for Sum<A, B>{
+
+    fn bind<C, F: Fn(&B) -> Self::HKT<C> >(&self, f: F) -> Self::HKT<C>{
+        match self{
+            Sum::A(a) => Sum::A(a.clone()),
+            Sum::B(a) => f(a),
+        }
+    }
+}

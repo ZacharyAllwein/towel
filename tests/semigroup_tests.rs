@@ -1,4 +1,4 @@
-use towel::semigroup::Semigroup;
+use towel::prelude::*;
 
 #[test]
 fn vec_combine() {

@@ -1,4 +1,4 @@
-use crate::traits::functor::Functor;
+use crate::traits::Functor;
 
 pub trait Applicative<'a, A>: Functor<'a, A> {
     type F<B: 'a>: Fn(&A) -> B

@@ -1,4 +1,4 @@
-use towel::monad::Monad;
+use towel::prelude::*;
 
 #[test]
 fn vec_monad() {

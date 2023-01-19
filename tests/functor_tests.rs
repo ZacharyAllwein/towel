@@ -1,4 +1,4 @@
-use towel::functor::Functor;
+use towel::prelude::*;
 
 #[test]
 fn vec_functor() {

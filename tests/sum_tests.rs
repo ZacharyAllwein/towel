@@ -1,5 +1,5 @@
 use towel::prelude::*;
-use towel::sum::Sum;
+use towel::data_structures::Sum;
 
 #[test]
 fn sum_functor(){

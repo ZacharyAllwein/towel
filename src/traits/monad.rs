@@ -1,5 +1,4 @@
-use crate::traits::applicative::Applicative;
-use crate::traits::functor::Functor;
+use crate::traits::{Applicative, Functor};
 
 pub trait Monad<'a, A>: Applicative<'a, A> {
     fn ret(a: A) -> Self
