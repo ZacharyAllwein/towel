@@ -21,3 +21,15 @@ fn sum_applicative(){
     assert_eq!(sum2.app(&sumf), Sum::<i32, i32>::B(2));
 }
 
+#[test]
+fn sum_monad(){
+    let sum1: Sum<i32, i32> = Sum::B(1);
+    let sum2: Sum<i32, i32> = Sum::A(1);
+    let f: fn(&i32) -> Sum<i32, i32> = |&x| Sum::ret(x + 1);
+
+    assert_eq!(sum1.bind(f), Sum::ret(2));
+
+    assert_eq!(sum2.bind(f), sum2);
+
+}
+
