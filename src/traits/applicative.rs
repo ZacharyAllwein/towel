@@ -3,6 +3,7 @@ use crate::traits::functor::Functor;
 pub trait Applicative<'a, A>: Functor<'a, A> {
 
     type F<B: 'a>: Fn(&A) -> B
+
     where
         Self: 'a;
 

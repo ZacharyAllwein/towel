@@ -13,11 +13,11 @@ impl<'a, S: 'a, A: 'a> Functor<'a, A> for State<'a, S, A> {
     }
 }
 
-impl<'a, S: Monoid + 'a, A: Clone + 'a> Applicative<'a, A> for State<'a, S, A> {
+impl<'a, S: 'a, A: Clone + 'a> Applicative<'a, A> for State<'a, S, A> {
     type F<B: 'a> = fn(&A) -> B;
 
     fn pure(a: A) -> State<'a, S, A> {
-        State(Box::new(move |_| (a.clone(), <S as Monoid>::mempty())))
+        State(Box::new(move |s| (a.clone(), s)))
     }
 
     fn app<B: 'a>(&'a self, other: &'a Self::HKT<Self::F<B>>) -> Self::HKT<B> {
