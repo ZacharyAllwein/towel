@@ -1,6 +1,8 @@
 //lifting is the cheatcode of type tetris or smth idk
 pub trait Functor<'a, A> {
-    type FHKT<B> where Self: 'a;
+    type FHKT<B>
+    where
+        Self: 'a;
 
     fn fmap<B, F: Fn(&A) -> B + 'a>(&'a self, f: F) -> Self::FHKT<B>;
 }
