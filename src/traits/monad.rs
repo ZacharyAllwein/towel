@@ -1,5 +1,5 @@
-use crate::applicative::Applicative;
-use crate::functor::Functor;
+use crate::traits::applicative::Applicative;
+use crate::traits::functor::Functor;
 
 pub trait Monad<'a, A>: Applicative<'a, A> {
     type MHKT<B>;

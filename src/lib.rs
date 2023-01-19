@@ -1,5 +1,5 @@
-pub mod applicative;
-pub mod functor;
-pub mod monad;
-pub mod monoid;
-pub mod semigroup;
+mod data_structures;
+mod traits;
+
+pub use data_structures::*;
+pub use traits::*;

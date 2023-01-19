@@ -1,4 +1,4 @@
-use crate::semigroup::Semigroup;
+use crate::traits::semigroup::Semigroup;
 
 //a monoid is a associative binary operation over a set with an identity value
 pub trait Monoid: Semigroup {

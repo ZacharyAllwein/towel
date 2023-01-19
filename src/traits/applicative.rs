@@ -1,6 +1,6 @@
-use crate::functor::Functor;
+use crate::traits::functor::Functor;
 
-pub trait Applicative<'a, A>: Functor<A> {
+pub trait Applicative<'a, A>: Functor<'a, A> {
     type AHKT<B: 'a>;
 
     type F<B: 'a>: Fn(&A) -> B;
