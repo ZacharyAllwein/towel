@@ -10,7 +10,7 @@ pub trait Monad<'a, A>: Applicative<'a, A> {
         <Self as Applicative<A>>::pure(a)
     }
 
-    fn bind<B, F: Fn(&A) -> Self::HKT<B>>(&self, f: F) -> Self::HKT<B>;
+    fn bind<B, F: Fn(&A) -> Self::HKT<B> + 'a>(&'a self, f: F) -> Self::HKT<B>;
 }
 
 //basically a flat map for vec

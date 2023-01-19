@@ -30,6 +30,17 @@ impl<'a, S: 'a, A: Clone + 'a> Applicative<'a, A> for State<'a, S, A> {
     }
 }
 
+impl<'a, S: 'a, A: Clone + 'a> Monad<'a, A> for State<'a, S, A> {
+
+    fn bind<B, F: Fn(&A) -> Self::HKT<B> + 'a>(&'a self, f: F) -> Self::HKT<B> {
+        State(Box::new(move |s| {
+            let (a, ns) = self.eval(s);
+            f(&a).eval(ns)
+        }))
+    }
+
+}
+
 impl<'a, S, A> State<'a, S, A> {
     pub fn new(s: Box<dyn Fn(S) -> (A, S) + 'a>) -> State<'a, S, A> {
         State(s)
