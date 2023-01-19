@@ -10,6 +10,7 @@ pub mod prelude {
     pub use monoid::Monoid;
     pub use semigroup::Semigroup;
     pub use state::State;
+    pub use cons::Cons;
     use traits::*;
 }
 
