@@ -5,9 +5,9 @@ struct State<'a, S, A>(Box<dyn Fn(S) -> (A, S) + 'a>);
 
 impl<'a, S: 'a, A: 'a> Functor<'a, A> for State<'a, S, A> {
 
-    type FHKT<B: 'a> = State<'a, S, B>;
+    type FHKT<B> = State<'a, S, B>;
 
-    fn fmap<B: 'a, F: Fn(&A) -> B + 'a>(&'a self, f: F) -> Self::FHKT<B>
+    fn fmap<B, F: Fn(&A) -> B + 'a>(&'a self, f: F) -> Self::FHKT<B>
     {
         State(Box::new(move |s| {
             let (a, ns) = self.eval(s);
