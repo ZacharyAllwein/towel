@@ -40,7 +40,7 @@ impl<'a, S: 'a, A: Clone + 'a> Monad<'a, A> for State<'a, S, A> {
 }
 
 impl<'a, S, A> State<'a, S, A> {
-    pub fn new(s: Box<dyn Fn(S) -> (A, S) + 'a>) -> State<'a, S, A> {
+    pub fn new(s: Box<dyn Fn(S) -> (A, S) + 'a>) -> Self {
         State(s)
     }
     pub fn eval(&self, s: S) -> (A, S) {

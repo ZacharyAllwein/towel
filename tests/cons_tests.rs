@@ -1,7 +1,7 @@
 use towel::prelude::*;
 
 #[test]
-fn vec_cons(){
+fn vec_cons() {
     let x = vec![];
 
     assert_eq!(x.clone().layer(3), vec![3]);
