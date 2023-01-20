@@ -12,8 +12,8 @@ impl<A: Semigroup, B: Semigroup> Semigroup for And<A, B> {
 }
 
 impl<A: Monoid, B: Monoid> Monoid for And<A, B> {
-    fn mempty() -> Self {
-        And(<A as Monoid>::mempty(), <B as Monoid>::mempty())
+    fn empty() -> Self {
+        And(<A as Monoid>::empty(), <B as Monoid>::empty())
     }
 }
 
@@ -29,10 +29,10 @@ impl<'a, A: 'a + Clone + Monoid, B: 'a> Applicative<'a, B> for And<A, B> {
     type F<C: 'a> = fn(&B) -> C;
 
     fn pure(a: B) -> Self {
-        And(<A as Monoid>::mempty(), a)
+        And(<A as Monoid>::empty(), a)
     }
 
-    fn app<C: 'a>(&self, other: &Self::HKT<Self::F<C>>) -> Self::HKT<C> {
+    fn apply<C: 'a>(&self, other: &Self::HKT<Self::F<C>>) -> Self::HKT<C> {
         And(
             self.0.combine(&other.0),
             (other.1)(&self.1),

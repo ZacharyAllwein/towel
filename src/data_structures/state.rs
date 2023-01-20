@@ -20,7 +20,7 @@ impl<'a, S: 'a, A: Clone + 'a> Applicative<'a, A> for State<'a, S, A> {
         State(Box::new(move |s| (a.clone(), s)))
     }
 
-    fn app<B: 'a>(&'a self, other: &'a Self::HKT<Self::F<B>>) -> Self::HKT<B> {
+    fn apply<B: 'a>(&'a self, other: &'a Self::HKT<Self::F<B>>) -> Self::HKT<B> {
         State(Box::new(move |s| {
             let (fa, ns) = other.eval(s);
             let (a, fs) = self.eval(ns);

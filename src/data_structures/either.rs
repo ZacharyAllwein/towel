@@ -25,7 +25,7 @@ impl<'a, A: 'a + Clone, B: 'a> Applicative<'a, B> for Either<A, B> {
         Right(a)
     }
 
-    fn app<C: 'a>(&self, other: &Self::HKT<Self::F<C>>) -> Self::HKT<C> {
+    fn apply<C: 'a>(&self, other: &Self::HKT<Self::F<C>>) -> Self::HKT<C> {
         match (self, other) {
             (Left(a), _) => Left(a.clone()),
             (_, Left(a)) => Left(a.clone()),
