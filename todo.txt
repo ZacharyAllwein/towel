@@ -1,7 +1,5 @@
 Just a list of ideas of things to work on
 
-Product a b type
-Sum a b type
 
 Product Num monoid
 Sum Num monoid
@@ -12,3 +10,4 @@ Macros
 Partial application
 Do dsl macro
 Other point free macros
+Combinators

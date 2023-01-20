@@ -10,4 +10,6 @@ pub mod prelude {
     pub use traits::Monad;
     pub use traits::Monoid;
     pub use traits::Semigroup;
+    pub use data_structures::Either::{self, Left, Right};
+    pub use data_structures::And;
 }

@@ -1,7 +1,7 @@
-pub mod product;
+pub mod either;
 pub mod state;
-pub mod sum;
+pub mod and;
 
-pub use product::Product;
+pub use and::And;
 pub use state::State;
-pub use sum::Sum;
+pub use either::Either;
