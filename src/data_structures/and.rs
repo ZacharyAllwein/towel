@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+
+/// Newtype wrapper for tuple, more exercise than useful
 pub struct And<A, B>(A, B);
 
 impl<A: Semigroup, B: Semigroup> Semigroup for And<A, B> {
