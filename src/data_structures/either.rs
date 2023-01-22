@@ -2,14 +2,14 @@ use crate::prelude::*;
 
 /// A enum similar to haskells Either type represents the possibility of
 /// being of type A ([Left]) or type B ([Right])
-/// 
+///
 /// # Examples
 ///
 /// Basic Usage:
 ///
 /// ```
 /// # use towel::prelude::*;
-/// 
+///
 /// //if a < 10 return a
 /// //else return a as a String
 /// fn less_than_ten(a: i32) -> Either<String, i32>{
@@ -20,7 +20,7 @@ use crate::prelude::*;
 ///         Left(a.to_string())
 ///     }
 /// }
-/// 
+///
 /// assert_eq!(less_than_ten(9), Right(9));
 ///
 /// assert_eq!(less_than_ten(11), Left("11".to_string()));
@@ -37,14 +37,14 @@ use crate::prelude::*;
 ///
 /// let l: Either<i32, i32> = Left(2);
 /// let r: Either<i32, i32> = Right(2);
-/// 
+///
 /// //idempotent
 /// assert_eq!(l.fmap(|x| x + 1), Left(2));
 ///
 /// //as expected
 /// assert_eq!(r.fmap(|x| x + 1), Right(3));
 /// ```
-/// 
+///
 /// # Applicative
 ///
 /// Like [Functor] there are similar constraints over the [Applicative]
@@ -56,9 +56,9 @@ use crate::prelude::*;
 ///
 /// let l: Either<i32, i32> = Left(2);
 /// let r: Either<i32, i32> = Right(2);
-/// 
+///
 /// let rf: Either<i32, fn(&i32) -> String> = Right(|&x| x.to_string());
-/// 
+///
 /// //idempotent
 /// assert_eq!(l.apply(&rf), Left::<i32, String>(2));
 ///
@@ -81,10 +81,10 @@ use crate::prelude::*;
 ///         Err(_) => Left("parse failed")
 ///     }
 /// };
-/// 
+///
 /// //no effect
 /// assert_eq!(l.bind(f), Left::<&str, i32>("hello there"));
-/// 
+///
 /// //as expected
 /// assert_eq!(r.bind(f), Right(32));
 #[derive(Debug, PartialEq, Clone)]
