@@ -2,7 +2,6 @@ use crate::traits::Semigroup;
 
 /// Trait for types with [Semigroup] that also have an identity value
 pub trait Monoid: Semigroup {
-    
     /// Returns an identity value from a Type with a Monoid
     ///
     /// # Examples
@@ -11,7 +10,7 @@ pub trait Monoid: Semigroup {
     ///
     /// ```
     /// use towel::traits::Monoid;
-    /// 
+    ///
     /// //empty for vecs
     /// assert_eq!(<Vec<i32> as Monoid>::empty(), vec![]);
     ///

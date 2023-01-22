@@ -45,27 +45,6 @@ use crate::prelude::*;
 /// assert_eq!(r.fmap(|x| x + 1), Right(3));
 /// ```
 ///
-/// # Applicative
-///
-/// Like [Functor] there are similar constraints over the [Applicative]
-/// for Either. Applying over a Left is idempotent.
-/// Only a Right applied to a Right has function application behavior.
-///
-/// ```
-/// # use towel::prelude::*;
-///
-/// let l: Either<i32, i32> = Left(2);
-/// let r: Either<i32, i32> = Right(2);
-///
-/// let rf: Either<i32, fn(&i32) -> String> = Right(|&x| x.to_string());
-///
-/// //idempotent
-/// assert_eq!(l.apply(&rf), Left::<i32, String>(2));
-///
-/// //as expected
-/// assert_eq!(r.apply(&rf), Right("2".to_string()));
-///```
-///
 /// # Monad
 /// [Binding](Monad) over a Left has no effect, but works over a Right.
 ///
@@ -94,9 +73,9 @@ pub enum Either<A, B> {
 }
 
 impl<'a, A: 'a + Clone, B: 'a> Functor<'a, B> for Either<A, B> {
-    type HKT<C> = Either<A, C>;
+    type HKT<C: 'a> = Either<A, C>;
 
-    fn fmap<C, F: Fn(&B) -> C>(&self, f: F) -> Self::HKT<C> {
+    fn fmap<C: 'a, F: Fn(&B) -> C>(&self, f: F) -> Self::HKT<C> {
         match self {
             Left(a) => Left(a.clone()),
             Right(b) => Right(f(b)),
@@ -105,23 +84,22 @@ impl<'a, A: 'a + Clone, B: 'a> Functor<'a, B> for Either<A, B> {
 }
 
 impl<'a, A: 'a + Clone, B: 'a> Applicative<'a, B> for Either<A, B> {
-    type F<C: 'a> = fn(&B) -> C;
 
     fn pure(a: B) -> Self {
         Right(a)
     }
 
-    fn apply<C: 'a>(&self, other: &Self::HKT<Self::F<C>>) -> Self::HKT<C> {
+    fn lift_a2<C: 'a, D: 'a, F: Fn(&B, &C) -> D + 'a>(&'a self, other: &Self::HKT<C>, f: F) -> Self::HKT<D>{
         match (self, other) {
             (Left(a), _) => Left(a.clone()),
             (_, Left(a)) => Left(a.clone()),
-            (Right(a), Right(f)) => Right(f(a)),
+            (Right(a), Right(b)) => Right(f(a, b)),
         }
     }
 }
 
 impl<'a, A: 'a + Clone, B: 'a> Monad<'a, B> for Either<A, B> {
-    fn bind<C, F: Fn(&B) -> Self::HKT<C>>(&self, f: F) -> Self::HKT<C> {
+    fn bind<C: 'a, F: Fn(&B) -> Self::HKT<C>>(&self, f: F) -> Self::HKT<C> {
         match self {
             Left(a) => Left(a.clone()),
             Right(a) => f(a),
