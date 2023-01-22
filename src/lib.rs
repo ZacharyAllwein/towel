@@ -4,7 +4,7 @@ pub mod traits;
 pub mod prelude {
     use super::*;
     pub use data_structures::Either::{self, Left, Right};
-    pub use data_structures::State;
+    // pub use data_structures::State;
     pub use traits::Applicative;
     pub use traits::Cons;
     pub use traits::Functor;

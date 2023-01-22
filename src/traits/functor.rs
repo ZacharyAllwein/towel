@@ -1,40 +1,23 @@
 /// Trait for function application abstracted over structure
-pub trait Functor<'a, A> {
-    /// Generic associated type that allows for higher kinded behavior
-    type HKT<B: 'a>: Functor<'a, B>
-    where
-        Self: 'a;
+pub trait Functor<A, B> {
 
-    /// Applies or lifts function over some structure
-    ///
-    /// # Examples
-    ///
-    /// Basic Usage:
-    ///
-    /// ```
-    /// use towel::traits::Functor;
-    ///
-    /// let v = vec![1, 2, 3];
-    ///
-    /// //takes an &i32, adds one too it and turns it into a String
-    /// let f: fn(&i32) -> String = |x| (x + 1).to_string();
-    ///
-    /// assert_eq!(v.fmap(f), vec!["2", "3", "4"]);
-    fn fmap<B, F: Fn(&A) -> B + 'a>(&'a self, f: F) -> Self::HKT<B>;
+    type Mapped;
+
+    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped;
 }
 
-impl<'a, A: 'a> Functor<'a, A> for Vec<A> {
-    type HKT<B: 'a> = Vec<B>;
+impl<A, B> Functor<A, B> for Vec<A> {
+    type Mapped = Vec<B>;
 
-    fn fmap<B: 'a, F: Fn(&A) -> B>(&self, f: F) -> Self::HKT<B> {
-        self.iter().map(&f).collect()
+    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped {
+        self.into_iter().map(&f).collect()
     }
 }
 
-impl<'a, A: 'a> Functor<'a, A> for Option<A> {
-    type HKT<B: 'a> = Option<B>;
+impl<A, B> Functor<A, B> for Option<A> {
+    type Mapped = Option<B>;
 
-    fn fmap<B: 'a, F: Fn(&A) -> B>(&self, f: F) -> Self::HKT<B> {
+    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped {
         match self {
             Some(x) => Some(f(x)),
             _ => None,

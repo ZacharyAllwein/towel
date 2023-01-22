@@ -1,33 +1,61 @@
 use crate::prelude::{Applicative, Functor, Monad};
 use std::marker::PhantomData;
 
+
+#[derive(Debug)]
 pub struct OptionT<M, A>(M, PhantomData<A>);
 
-impl<'a, M: 'a, A: 'a> Functor<'a, A> for OptionT<M, A>
-where
-    M: Functor<'a, Option<A>>,
-{
-    type HKT<B: 'a> = OptionT<<M as Functor<'a, Option<A>>>::HKT<Option<B>>, B>;
+//just reducing visual noise
+type O<A> = Option<A>;
 
-    fn fmap<B: 'a, F: Fn(&A) -> B + 'a>(&'a self, f: F) -> Self::HKT<B> {
+//helper type for wrapped Functor
+type InnerMapped<M, A, B> = <M as Functor<O<A>, O<B>>>::Mapped;
+
+//helper type for wrapped Applicative
+type InnerOther<M, A, B, C> =
+  <M as Applicative<O<A>, O<B>, O<C>>>::Other;
+
+
+impl<M, A, B> Functor<A, B> for OptionT<M, A>
+where
+    M: Functor<O<A>, O<B>>,
+{
+    type Mapped = OptionT<InnerMapped<M, A, B>, B>;
+
+    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped {
         OptionT(self.0.fmap(move |a| a.fmap(&f)), PhantomData)
     }
 }
 
-impl<'a, M: 'a, A: 'a> Applicative<'a, A> for OptionT<M, A>
+impl<M, A, B, C> Applicative<A, B, C> for OptionT<M, A>
 where
-    M: Applicative<'a, Option<A>>,
+    M: Applicative<O<A>, O<B>, O<C>>,
 {
+    type Other = OptionT<InnerOther<M, A, B, C>, B>;
 
-    fn pure(a: A) -> Self {
+    fn pure(a: C) -> Self::Mapped {
         OptionT(
-            <M as Applicative<Option<A>>>::pure(<Option<A> as Applicative<A>>::pure(a)),
+            <M as Applicative<O<A>, O<B>, O<C>>>::pure(Some(a)),
             PhantomData,
         )
     }
 
 
-    fn lift_a2<B: 'a, C: 'a, F: Fn(&A, &B) -> C + 'a>(&'a self, other: &'a Self::HKT<B>, f: F) -> Self::HKT<C>{
-        OptionT(self.0.lift_a2(&other.0, move |a, b| a.lift_a2(b, &f)), PhantomData)
+    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped{
+        OptionT(self.0.lift_a2(other.0, move |a, b| a.lift_a2(b, &f)), PhantomData)
+    }
+}
+
+
+impl<M, A, B> Monad<A, B> for OptionT<M, A>
+    where M: Monad<O<A>, O<B>>{
+
+    fn bind<F: Fn(A) -> Self::Mapped>(self, f: F) -> Self::Mapped{
+        OptionT(self.0.bind(move |a| {
+            match a.fmap(&f){
+                Some(x) => x.0,
+                None => <M as Applicative<O<A>, O<A>, O<B>>>::pure(None),
+            }
+        }), PhantomData)
     }
 }

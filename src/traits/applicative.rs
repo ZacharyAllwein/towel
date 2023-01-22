@@ -1,48 +1,42 @@
 use crate::traits::Functor;
 
 /// Trait for function application embedded in a structure over another structure
-pub trait Applicative<'a, A>: Functor<'a, A> {
+pub trait Applicative<A, B, C>: Functor<A, C> {
 
-    /// Puts a single value into structure of applicative
-    ///
-    /// # Examples
-    ///
-    /// Basic Usage:
-    ///
-    /// ```
-    /// use towel::traits::Applicative;
-    ///
-    /// let p = <Vec<i32>>::pure(1);
-    ///
-    /// assert_eq!(p, vec![1]);
-    fn pure(a: A) -> Self;
-    
+    type Other;
+
+    fn pure(a: C) -> Self::Mapped;
+
     //taking advice from fp complete website
-    fn lift_a2<B: 'a, C: 'a, F: Fn(&A, &B) -> C + 'a>(&'a self, other: &'a Self::HKT<B>, f: F) -> Self::HKT<C>;
+    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped;
 }
 
-impl<'a, A: 'a> Applicative<'a, A> for Vec<A> {
+impl<A: Clone, B: Clone, C> Applicative<A, B, C> for Vec<A>{
 
-    fn pure(a: A) -> Self {
+    type Other = Vec<B>;
+
+    fn pure(a: C) -> Self::Mapped {
         vec![a]
     }
 
-    fn lift_a2<B: 'a, C: 'a, F: Fn(&A, &B) -> C + 'a>(&self, other: &Self::HKT<B>, f: F) -> Self::HKT<C> {
+    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped {
         self.iter()
             .map(|a| other.iter()
-                         .map(|b| f(a, b)))
+                         .map(|b| f(a.clone(), b.clone())))
             .flatten()
             .collect()
     }
 }
 
-impl<'a, A: 'a> Applicative<'a, A> for Option<A> {
+impl<A, B, C> Applicative<A, B, C> for Option<A> {
 
-    fn pure(a: A) -> Self {
+    type Other = Option<B>;
+
+    fn pure(a: C) -> Self::Mapped {
         Some(a)
     }
 
-    fn lift_a2<B: 'a, C: 'a, F: Fn(&A, &B) -> C + 'a>(&self, other: &Self::HKT<B>, f: F) -> Self::HKT<C> {
+    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped {
         match (self, other) {
             (None, _) => None,
             (_, None) => None,
