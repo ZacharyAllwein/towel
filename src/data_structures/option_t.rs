@@ -9,29 +9,32 @@ pub struct OptionT<M, A>(M, PhantomData<A>);
 type O<A> = Option<A>;
 
 //helper type for wrapped Functor
-type InnerMapped<M, A, B> = <M as Functor<O<A>, O<B>>>::Mapped;
+type InnerMapped<M, A, B, F> = <M as Functor<O<A>, O<B>, F>>::Mapped;
 
 //helper type for wrapped Applicative
-type InnerOther<M, A, B, C> =
-  <M as Applicative<O<A>, O<B>, O<C>>>::Other;
+type InnerOther<M, A, B, C, F, G> =
+  <M as Applicative<O<A>, O<B>, O<C>, F, G>>::Other;
 
 
-impl<M, A, B> Functor<A, B> for OptionT<M, A>
+impl<M, A, B, F> Functor<A, B, F> for OptionT<M, A>
 where
-    M: Functor<O<A>, O<B>>,
+    F: Fn(A) -> B,
+    M: Functor<O<A>, O<B>, F>,
 {
     type Mapped = OptionT<InnerMapped<M, A, B>, B>;
 
-    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped {
+    fn fmap(self, f: F) -> Self::Mapped {
         OptionT(self.0.fmap(move |a| a.fmap(&f)), PhantomData)
     }
 }
 
-impl<M, A, B, C> Applicative<A, B, C> for OptionT<M, A>
+impl<M, A, B, C, F, G> Applicative<A, B, C, F, G> for OptionT<M, A>
 where
-    M: Applicative<O<A>, O<B>, O<C>>,
+    F: Fn(A, B) -> C,
+    G: Fn(A) -> C,
+    M: Applicative<O<A>, O<B>, O<C>, F, G>,
 {
-    type Other = OptionT<InnerOther<M, A, B, C>, B>;
+    type Other = OptionT<InnerOther<M, A, B, C, F, G>, B>;
 
     fn pure(a: C) -> Self::Mapped {
         OptionT(
@@ -41,16 +44,19 @@ where
     }
 
 
-    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped{
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Mapped{
         OptionT(self.0.lift_a2(other.0, move |a, b| a.lift_a2(b, &f)), PhantomData)
     }
 }
 
 
-impl<M, A, B> Monad<A, B> for OptionT<M, A>
-    where M: Monad<O<A>, O<B>>{
+impl<M, A, B, F, G, H> Monad<A, B, F, G, H> for OptionT<M, A>
+where F: Fn(A) -> Self::Mapped,
+      G: Fn(A, A) -> B,
+      H: Fn(A) -> B,
+      M: Monad<O<A>, O<B>>{
 
-    fn bind<F: Fn(A) -> Self::Mapped>(self, f: F) -> Self::Mapped{
+    fn bind(self, f: F) -> Self::Mapped{
         OptionT(self.0.bind(move |a| {
             match a.fmap(&f){
                 Some(x) => x.0,

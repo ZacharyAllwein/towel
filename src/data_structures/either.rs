@@ -31,10 +31,10 @@ pub enum Either<A, B> {
     Right(B),
 }
 
-impl<A, B, C> Functor<B, C> for Either<A, B> {
+impl<A, B, C, F: Fn(B) -> C> Functor<B, C, F> for Either<A, B> {
     type Mapped = Either<A, C>;
 
-    fn fmap<F: Fn(B) -> C>(self, f: F) -> Self::Mapped {
+    fn fmap(self, f: F) -> Self::Mapped {
         match self {
             Left(a) => Left(a),
             Right(b) => Right(f(b)),
@@ -42,7 +42,9 @@ impl<A, B, C> Functor<B, C> for Either<A, B> {
     }
 }
 
-impl<A, B, C, D> Applicative<B, C, D> for Either<A, B> {
+impl<A, B, C, D, F, G> Applicative<B, C, D, F, G> for Either<A, B>
+where F: Fn(B, C) -> D,
+      G: Fn(B) -> D{
 
     type Other = Either<A, C>;
 
@@ -50,7 +52,7 @@ impl<A, B, C, D> Applicative<B, C, D> for Either<A, B> {
         Right(a)
     }
 
-    fn lift_a2<F: Fn(B, C) -> D>(self, other: Self::Other, f: F) -> Self::Mapped{
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Mapped{
         match (self, other) {
             (Left(a), _) => Left(a),
             (_, Left(a)) => Left(a),
@@ -59,8 +61,11 @@ impl<A, B, C, D> Applicative<B, C, D> for Either<A, B> {
     }
 }
 
-impl<A, B, C> Monad<B, C> for Either<A, B> {
-    fn bind<F: Fn(B) -> Self::Mapped>(self, f: F) -> Self::Mapped {
+impl<A, B, C, F, G, H> Monad<B, C> for Either<A, B> 
+where F: Fn(A) -> Self::Mapped,
+      G: Fn(A, A) -> B,
+      H: Fn(A) -> B{
+    fn bind(self, f: F) -> Self::Mapped {
         match self {
             Left(a) => Left(a),
             Right(a) => f(a),
