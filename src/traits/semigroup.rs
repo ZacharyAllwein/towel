@@ -1,3 +1,9 @@
+/// A interface for types in which 2 elements of that type can be combined to form
+/// one element of that type
+///
+/// # Vec
+///
+/// The semigroup for Vectors is concatenation
 ///
 /// ```
 /// # use towel::traits::Semigroup;
@@ -10,9 +16,8 @@
 ///
 /// # Option
 ///
-/// The semigroup for options allows to options to be combined
-/// when Option<A: Semigroup>. In the case of a None variant it
-/// returns the other operand
+/// The semigroup for options when the Option<T: Semigroup> combines
+/// values of types Some. Combining with None is equivalent to an identity function
 ///
 /// ```
 /// # use towel::traits::Semigroup;

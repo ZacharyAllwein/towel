@@ -12,6 +12,7 @@ type O<A> = Option<A>;
 /// Basic Usage:
 ///
 /// ```
+/// # use towel::data_structures::{Either, OptionT};
 ///
 /// //syntax nightmare for users but even more so for implementor!
 /// let x = OptionT::<Either<Option<i32>, Option<i32>>, i32>::new(3);
