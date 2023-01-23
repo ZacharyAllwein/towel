@@ -4,6 +4,22 @@ use std::marker::PhantomData;
 //reducing visual noise
 type O<A> = Option<A>;
 
+/// An Option Transformer. Composition of a Monadic type and
+/// Option. 
+///
+/// # Examples
+///
+/// Basic Usage:
+///
+/// ```
+///
+/// //syntax nightmare for users but even more so for implementor!
+/// let x = OptionT::<Either<Option<i32>, Option<i32>>, i32>::new(3);
+/// 
+/// //OptionT(Right(Some(3)), PhantomData)
+/// println!("{:?}", x);
+///
+/// ```
 #[derive(Debug, PartialEq)]
 //using phantom &'a A to tie OptionT to both a lifetime and the type A
 pub struct OptionT<'a, M, A>(M, PhantomData<&'a A>);
@@ -56,7 +72,6 @@ where
             PhantomData,
         )
     }
-    
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         OptionT(
@@ -75,7 +90,6 @@ where
     F: Fn(A) -> Self::Bound + 'a,
 {
     fn ret(a: B) -> Self::Bound {
-
         OptionT(
             //use the inner monad to return M(Some(a))
             //we can't use the applicative instance for OptionT because
@@ -105,6 +119,28 @@ where
                     Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>,
                 >>::ret(None),
             })),
+            PhantomData,
+        )
+    }
+}
+
+impl<'a, M, A> OptionT<'a, M, A>
+where
+    //asserting to the cmopiler that M impls Bound and the type of Bound
+    //is the same as M which allows the new fn to return OptionT<M, A>(Self)
+    M: Bound<O<A>, Bound = M>
+        //also that it is a Monad because ultimatley this is a Monad transformer
+        //and that is the context we want it to work in
+        + Monad<O<A>, O<A>, Box<dyn Fn(O<A>) -> <M as Bound<O<A>>>::Bound + 'a>>,
+{
+    pub fn new(a: A) -> Self {
+
+        //less complicated version of OptionT::ret or OptionT::pure where type arguments
+        //are reduced
+        OptionT(
+            <M as Monad<O<A>, O<A>, Box<dyn Fn(O<A>) -> <M as Bound<O<A>>>::Bound + 'a>>>::ret(
+                Some(a),
+            ),
             PhantomData,
         )
     }
