@@ -1,5 +1,6 @@
 Just a list of ideas of things to work on
 
+Important! OptionT, Documentation
 
 Product Num monoid
 Sum Num monoid
