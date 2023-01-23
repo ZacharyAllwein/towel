@@ -2,7 +2,7 @@ use crate::prelude::{Applicative, Functor, Monad};
 use std::marker::PhantomData;
 
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct OptionT<M, A>(M, PhantomData<A>);
 
 //just reducing visual noise
@@ -57,5 +57,16 @@ impl<M, A, B> Monad<A, B> for OptionT<M, A>
                 None => <M as Applicative<O<A>, O<A>, O<B>>>::pure(None),
             }
         }), PhantomData)
+    }
+}
+
+impl<M, A> OptionT<M, A>
+where M: Monad<O<A>, O<A>>{
+    pub fn new(a: A) -> <Self as Functor<A, A>>::Mapped{
+      <Self as Applicative<A, A, A>>::pure(a) 
+    }
+
+    pub fn new_manual(a: M) -> Self{
+      OptionT(a, PhantomData)
     }
 }
