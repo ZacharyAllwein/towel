@@ -6,8 +6,8 @@ pub mod prelude {
     pub use data_structures::Either::{self, Left, Right};
     // pub use data_structures::State;
     pub use traits::Applicative;
-    pub use traits::Cons;
     pub use traits::Bound;
+    pub use traits::Cons;
     pub use traits::Functor;
     pub use traits::Monad;
     pub use traits::Monoid;

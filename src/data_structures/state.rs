@@ -1,13 +1,12 @@
-use crate::prelude::{Applicative, Functor, Monad, Bound};
+use crate::prelude::{Applicative, Bound, Functor, Monad};
 
 pub struct State<'a, S, A>(Box<dyn FnOnce(S) -> (A, S) + 'a>);
 
-impl<'a, S: 'a, A: 'a, B: 'a> Bound<B> for State<'a, S, A>{
+impl<'a, S: 'a, A: 'a, B: 'a> Bound<B> for State<'a, S, A> {
     type Bound = State<'a, S, B>;
 }
 
 impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + Fn(A) -> B> Functor<A, B, F> for State<'a, S, A> {
-
     fn fmap(self, f: F) -> Self::Bound {
         State(Box::new(move |s| {
             let (a, ns) = self.eval(s);
@@ -17,7 +16,9 @@ impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + Fn(A) -> B> Functor<A, B, F> for State<'a,
 }
 
 impl<'a, S: 'a, A: 'a, B: 'a, C: 'a, F> Applicative<A, B, C, F> for State<'a, S, A>
-where F: 'a + Fn(A, B) -> C{
+where
+    F: 'a + Fn(A, B) -> C,
+{
     type Other = State<'a, S, B>;
 
     fn pure(a: C) -> Self::Bound {
@@ -34,10 +35,11 @@ where F: 'a + Fn(A, B) -> C{
     }
 }
 
-impl<'a, S: 'a, A: 'a, B: 'a, F> Monad<A, B, F> for State<'a, S, A> 
-where F: 'a + Fn(A) -> Self::Bound{
-
-    fn ret(a: B) -> Self::Bound{
+impl<'a, S: 'a, A: 'a, B: 'a, F> Monad<A, B, F> for State<'a, S, A>
+where
+    F: 'a + Fn(A) -> Self::Bound,
+{
+    fn ret(a: B) -> Self::Bound {
         <Self as Applicative<A, A, B, fn(A, A) -> B>>::pure(a)
     }
     fn bind(self, f: F) -> Self::Bound {

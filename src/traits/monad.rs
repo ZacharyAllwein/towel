@@ -1,18 +1,16 @@
-use crate::traits::{Bound, Functor, Applicative};
+use crate::traits::{Applicative, Bound, Functor};
 /// Trait describing function application in a context
 /// where funtion application generates more structure
 
 //don't need control of <Self as Applicative>::Other, so just writin it off
-pub trait Monad<A, B, F: Fn(A) -> Self::Bound>: Bound<B>
-{
+pub trait Monad<A, B, F: Fn(A) -> Self::Bound>: Bound<B> {
     fn ret(a: B) -> Self::Bound;
 
     fn bind(self, f: F) -> Self::Bound;
 }
 
-impl<A: Clone, B, F: Fn(A) -> Self::Bound> Monad<A, B, F> for Vec<A>{
-
-    fn ret(a: B) -> Self::Bound{
+impl<A: Clone, B, F: Fn(A) -> Self::Bound> Monad<A, B, F> for Vec<A> {
+    fn ret(a: B) -> Self::Bound {
         <Self as Applicative<A, A, B, fn(A, A) -> B>>::pure(a)
     }
 
@@ -22,9 +20,8 @@ impl<A: Clone, B, F: Fn(A) -> Self::Bound> Monad<A, B, F> for Vec<A>{
 }
 
 //map value inside Option to Option then reduce structure
-impl<A, B, F: Fn(A) -> Self::Bound> Monad<A, B, F> for Option<A>{
-
-    fn ret(a: B) -> Self::Bound{
+impl<A, B, F: Fn(A) -> Self::Bound> Monad<A, B, F> for Option<A> {
+    fn ret(a: B) -> Self::Bound {
         <Self as Applicative<A, A, B, fn(A, A) -> B>>::pure(a)
     }
 

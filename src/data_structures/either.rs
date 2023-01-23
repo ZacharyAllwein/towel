@@ -1,4 +1,4 @@
-use crate::prelude::{Bound, Applicative, Monad, Functor, Left, Right};
+use crate::prelude::{Applicative, Bound, Functor, Left, Monad, Right};
 
 /// A enum similar to haskells Either type represents the possibility of
 /// being of type A ([Left]) or type B ([Right])
@@ -31,12 +31,11 @@ pub enum Either<A, B> {
     Right(B),
 }
 
-impl<A, B, C> Bound<C> for Either<A, B>{
+impl<A, B, C> Bound<C> for Either<A, B> {
     type Bound = Either<A, C>;
 }
 
 impl<A, B, C, F: Fn(B) -> C> Functor<B, C, F> for Either<A, B> {
-
     fn fmap(self, f: F) -> Self::Bound {
         match self {
             Left(a) => Left(a),
@@ -45,15 +44,14 @@ impl<A, B, C, F: Fn(B) -> C> Functor<B, C, F> for Either<A, B> {
     }
 }
 
-impl<A, B, C, D, F: Fn(B, C) -> D> Applicative<B, C, D, F> for Either<A, B>{
-
+impl<A, B, C, D, F: Fn(B, C) -> D> Applicative<B, C, D, F> for Either<A, B> {
     type Other = Either<A, C>;
 
     fn pure(a: D) -> Self::Bound {
         Right(a)
     }
 
-    fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound{
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         match (self, other) {
             (Left(a), _) => Left(a),
             (_, Left(a)) => Left(a),
@@ -62,9 +60,8 @@ impl<A, B, C, D, F: Fn(B, C) -> D> Applicative<B, C, D, F> for Either<A, B>{
     }
 }
 
-impl<A, B, C, F: Fn(B) -> Self::Bound> Monad<B, C, F> for Either<A, B>{
-
-    fn ret(a: C) -> Self::Bound{
+impl<A, B, C, F: Fn(B) -> Self::Bound> Monad<B, C, F> for Either<A, B> {
+    fn ret(a: C) -> Self::Bound {
         <Self as Applicative<B, B, C, fn(B, B) -> C>>::pure(a)
     }
 
