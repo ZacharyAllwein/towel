@@ -49,17 +49,62 @@ where
 
     fn pure(a: C) -> Self::Bound {
         OptionT(
+            //use the inner pure definition and put Some(a) into inner structure
             <M as Applicative<O<A>, O<B>, O<C>, Box<dyn Fn(O<A>, O<B>) -> O<C> + 'a>>>::pure(Some(
                 a,
             )),
             PhantomData,
         )
     }
+    
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         OptionT(
+            //lift inner self and inner other using a function that utilizes
+            //the lift_a2 for option to combine the 2 values inside the options
             self.0
                 .lift_a2(other.0, Box::new(move |a, b| a.lift_a2(b, &f))),
+            PhantomData,
+        )
+    }
+}
+
+impl<'a, M, A, B: 'a, F> Monad<A, B, F> for OptionT<'a, M, A>
+where
+    M: Monad<O<A>, O<B>, Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>,
+    F: Fn(A) -> Self::Bound + 'a,
+{
+    fn ret(a: B) -> Self::Bound {
+
+        OptionT(
+            //use the inner monad to return M(Some(a))
+            //we can't use the applicative instance for OptionT because
+            //the trait bounds in this impl don't guarentee M will have an instance of applicative
+            //only monad
+            <M as Monad<O<A>, O<B>, Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>>::ret(
+                Some(a),
+            ),
+            PhantomData,
+        )
+    }
+
+    fn bind(self, f: F) -> Self::Bound {
+        OptionT(
+            //uses inner monads bind and makes a function that fits that signature
+            self.0.bind(Box::new(move |a| match a {
+                //a is type O<A> instead of binding on it direcly
+                //because the f we have takes us to an OptionT::Bound
+                //we pattern match if it is none we return None lifted into monadic structure
+                //satisfying type of inner bind
+                //If it has a value we run our function a -> OptionT then access internal value
+                //to satisfy type of inner bind fn
+                Some(b) => f(b).0,
+                None => <M as Monad<
+                    O<A>,
+                    O<B>,
+                    Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>,
+                >>::ret(None),
+            })),
             PhantomData,
         )
     }
