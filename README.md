@@ -2,7 +2,7 @@ Towel is a functional programming library for Rust
 (Just a small project I'm playing with as I'm learning haskell)
 
 
-#Implemented Stuff
+# Implemented Stuff
 * Semigroup
 * Monoid
 * Functor
@@ -14,16 +14,16 @@ Towel is a functional programming library for Rust
 * Option Transformer
 * Cons Trait
 
-#Documented Stuff
+# Documented Stuff
 * Semigroup
 * Monoid
 * Cons
 
-#Undocumented Stuff
+# Undocumented Stuff
 Trying to get things of this list
 * Everything Else
 
-#Planned Stuff
+# Planned Stuff
 * Combinators(Compose, Pipe, Etc..)
 * Reader
 * Do macro
