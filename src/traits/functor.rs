@@ -1,23 +1,21 @@
+use crate::traits::Bound;
+
 /// Trait for function application abstracted over structure
-pub trait Functor<A, B> {
+pub trait Functor<A, B, F: Fn(A) -> B>: Bound<B>{
 
-    type Mapped;
-
-    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped;
+    fn fmap(self, f: F) -> Self::Bound;
 }
 
-impl<A, B> Functor<A, B> for Vec<A> {
-    type Mapped = Vec<B>;
+impl<A, B, F: Fn(A) -> B> Functor<A, B, F> for Vec<A> {
 
-    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped {
+    fn fmap(self, f: F) -> Self::Bound {
         self.into_iter().map(&f).collect()
     }
 }
 
-impl<A, B> Functor<A, B> for Option<A> {
-    type Mapped = Option<B>;
+impl<A, B, F: Fn(A) -> B> Functor<A, B, F> for Option<A> {
 
-    fn fmap<F: Fn(A) -> B>(self, f: F) -> Self::Mapped {
+    fn fmap(self, f: F) -> Self::Bound {
         match self {
             Some(x) => Some(f(x)),
             _ => None,

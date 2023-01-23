@@ -1,42 +1,41 @@
-use crate::traits::Functor;
+use crate::traits::Bound;
 
 /// Trait for function application embedded in a structure over another structure
-pub trait Applicative<A, B, C>: Functor<A, C> {
+pub trait Applicative<A, B, C, F: Fn(A, B) -> C>: Bound<C>{
 
     type Other;
 
-    fn pure(a: C) -> Self::Mapped;
+    fn pure(a: C) -> Self::Bound;
 
     //taking advice from fp complete website
-    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped;
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound;
 }
 
-impl<A: Clone, B: Clone, C> Applicative<A, B, C> for Vec<A>{
+impl<A: Clone, B: Clone, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Vec<A>{
 
     type Other = Vec<B>;
 
-    fn pure(a: C) -> Self::Mapped {
+    fn pure(a: C) -> Self::Bound {
         vec![a]
     }
 
-    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped {
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         self.iter()
-            .map(|a| other.iter()
-                         .map(|b| f(a.clone(), b.clone())))
+            .map(|a| other.iter().map(|b| f(a.clone(), b.clone())))
             .flatten()
             .collect()
     }
 }
 
-impl<A, B, C> Applicative<A, B, C> for Option<A> {
+impl<A, B, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Option<A> {
 
     type Other = Option<B>;
 
-    fn pure(a: C) -> Self::Mapped {
+    fn pure(a: C) -> Self::Bound {
         Some(a)
     }
 
-    fn lift_a2<F: Fn(A, B) -> C>(self, other: Self::Other, f: F) -> Self::Mapped {
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         match (self, other) {
             (None, _) => None,
             (_, None) => None,
