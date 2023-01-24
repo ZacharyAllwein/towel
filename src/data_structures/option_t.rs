@@ -41,28 +41,28 @@ where
     //without the lifetime on Box<dyn Fn> it is set as static, so F will also need
     //to be static. But if we want F to be lifetime A, Box<dyn Fn> also has to be lifetime
     //A
-    M: Functor<O<A>, O<B>, Box<dyn Fn(O<A>) -> O<B> + 'a>>,
-    F: Fn(A) -> B + 'a,
+    M: Functor<O<A>, O<B>, Box<dyn FnOnce(O<A>) -> O<B> + 'a>>,
+    F: FnOnce(A) -> B + 'a,
 {
     //because the return type, Bound borrows f, it has to have the same lifetime as f
     //because Bound is an OptionT, OT needs to have the same lifetime as f
     //hence the confusing lifetime usages
     fn fmap(self, f: F) -> Self::Bound {
-        OptionT(self.0.fmap(Box::new(move |a| a.fmap(&f))), PhantomData)
+        OptionT(self.0.fmap(Box::new(move |a| a.fmap(f))), PhantomData)
     }
 }
 
 impl<'a, M, A, B: 'a, C: 'a, F> Applicative<A, B, C, F> for OptionT<'a, M, A>
 where
-    M: Applicative<O<A>, O<B>, O<C>, Box<dyn Fn(O<A>, O<B>) -> O<C> + 'a>>,
-    F: Fn(A, B) -> C + 'a,
+    M: Applicative<O<A>, O<B>, O<C>, Box<dyn FnOnce(O<A>, O<B>) -> O<C> + 'a>>,
+    F: FnOnce(A, B) -> C + 'a,
 {
     type Other = OptionT<
         'a,
         //love me some fully qualified rust syntax
         //basically just as applicative while telling
         //the compiler I know what I'm talking about
-        <M as Applicative<O<A>, O<B>, O<C>, Box<dyn Fn(O<A>, O<B>) -> O<C> + 'a>>>::Other,
+        <M as Applicative<O<A>, O<B>, O<C>, Box<dyn FnOnce(O<A>, O<B>) -> O<C> + 'a>>>::Other,
         PhantomData<B>,
     >;
 
@@ -71,7 +71,7 @@ where
             //lift inner self and inner other using a function that utilizes
             //the lift_a2 for option to combine the 2 values inside the options
             self.0
-                .lift_a2(other.0, Box::new(move |a, b| a.lift_a2(b, &f))),
+                .lift_a2(other.0, Box::new(move |a, b| a.lift_a2(b, f))),
             PhantomData,
         )
     }
@@ -79,8 +79,8 @@ where
 
 impl<'a, M, A, B: 'a, F> Monad<A, B, F> for OptionT<'a, M, A>
 where
-    M: Monad<O<A>, O<B>, Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>,
-    F: Fn(A) -> Self::Bound + 'a,
+    M: Monad<O<A>, O<B>, Box<dyn FnOnce(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>,
+    F: FnOnce(A) -> Self::Bound + 'a,
 {
     fn bind(self, f: F) -> Self::Bound {
         OptionT(

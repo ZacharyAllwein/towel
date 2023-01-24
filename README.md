@@ -3,8 +3,8 @@ Towel is a functional programming library for Rust
 
 ### ToDoList
 * Result trait impls
-* Shift trait docs to match monad
 * Documentation for data structures
+* Examples for combinators
 
 
 ### Implemented Stuff
@@ -23,6 +23,10 @@ Towel is a functional programming library for Rust
 * Semigroup
 * Monoid
 * Cons
+* Bound
+* Functor
+* Applicative
+* Monad
 
 ### Undocumented Stuff
 Trying to get things of this list

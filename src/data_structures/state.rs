@@ -29,7 +29,7 @@ impl<'a, S: 'a, A: 'a, B: 'a> Bound<B> for State<'a, S, A> {
     }
 }
 
-impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + Fn(A) -> B> Functor<A, B, F> for State<'a, S, A> {
+impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + FnOnce(A) -> B> Functor<A, B, F> for State<'a, S, A> {
     fn fmap(self, f: F) -> Self::Bound {
         State(Box::new(move |s| {
             let (a, ns) = self.eval(s);
@@ -40,7 +40,7 @@ impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + Fn(A) -> B> Functor<A, B, F> for State<'a,
 
 impl<'a, S: 'a, A: 'a, B: 'a, C: 'a, F> Applicative<A, B, C, F> for State<'a, S, A>
 where
-    F: 'a + Fn(A, B) -> C,
+    F: 'a + FnOnce(A, B) -> C,
 {
     type Other = State<'a, S, B>;
 
@@ -56,7 +56,7 @@ where
 
 impl<'a, S: 'a, A: 'a, B: 'a, F> Monad<A, B, F> for State<'a, S, A>
 where
-    F: 'a + Fn(A) -> Self::Bound,
+    F: 'a + FnOnce(A) -> Self::Bound,
 {
     fn bind(self, f: F) -> Self::Bound {
         State(Box::new(move |s| {

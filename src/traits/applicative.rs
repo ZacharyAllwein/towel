@@ -1,7 +1,7 @@
 use crate::traits::Bound;
 
 /// Trait for function application embedded in a structure over another structure
-pub trait Applicative<A, B, C, F: Fn(A, B) -> C>: Bound<C> {
+pub trait Applicative<A, B, C, F: FnOnce(A, B) -> C>: Bound<C> {
     /// Another version of [Bound] that is applicative specific
     type Other;
 
@@ -31,7 +31,7 @@ impl<A: Clone, B: Clone, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Vec<A>
     }
 }
 
-impl<A, B, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Option<A> {
+impl<A, B, C, F: FnOnce(A, B) -> C> Applicative<A, B, C, F> for Option<A> {
     type Other = Option<B>;
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {

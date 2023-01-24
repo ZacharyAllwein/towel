@@ -39,7 +39,7 @@ impl<A, B, C> Bound<C> for Either<A, B> {
     }
 }
 
-impl<A, B, C, F: Fn(B) -> C> Functor<B, C, F> for Either<A, B> {
+impl<A, B, C, F: FnOnce(B) -> C> Functor<B, C, F> for Either<A, B> {
     fn fmap(self, f: F) -> Self::Bound {
         match self {
             Left(a) => Left(a),
@@ -48,7 +48,7 @@ impl<A, B, C, F: Fn(B) -> C> Functor<B, C, F> for Either<A, B> {
     }
 }
 
-impl<A, B, C, D, F: Fn(B, C) -> D> Applicative<B, C, D, F> for Either<A, B> {
+impl<A, B, C, D, F: FnOnce(B, C) -> D> Applicative<B, C, D, F> for Either<A, B> {
     type Other = Either<A, C>;
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
@@ -60,7 +60,7 @@ impl<A, B, C, D, F: Fn(B, C) -> D> Applicative<B, C, D, F> for Either<A, B> {
     }
 }
 
-impl<A, B, C, F: Fn(B) -> Self::Bound> Monad<B, C, F> for Either<A, B> {
+impl<A, B, C, F: FnOnce(B) -> Self::Bound> Monad<B, C, F> for Either<A, B> {
     fn bind(self, f: F) -> Self::Bound {
         match self {
             Left(a) => Left(a),
