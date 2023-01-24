@@ -4,13 +4,8 @@ pub trait Cons<A> {
     /// Produces new data structure from old Cons and a new value
     /// Takes ownership of old Cons
     ///
-    /// # Example
-    ///
-    /// Basic Usage:
-    ///
     /// ```
     /// # use towel::traits::Cons;
-    ///
     /// let v = vec![1, 2, 3];
     ///
     /// //u takes ownership of v
@@ -22,11 +17,8 @@ pub trait Cons<A> {
 
     /// Produces tuple containing first value in Cons and tail of Cons
     ///
-    /// # Example
-    ///
     /// ```
-    /// use towel::traits::Cons;
-    ///
+    /// # use towel::traits::Cons;
     /// let (x, v) = vec![1, 2, 3].next();
     ///
     /// //head of Cons is last of vec

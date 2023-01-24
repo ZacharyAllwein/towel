@@ -13,8 +13,6 @@ type O<A> = Option<A>;
 ///
 /// ```
 /// # use towel::data_structures::{Either, OptionT};
-///
-/// //syntax nightmare for users but even more so for implementor!
 /// let x = OptionT::<Either<Option<i32>, Option<i32>>, i32>::new(3);
 /// 
 /// //OptionT(Right(Some(3)), PhantomData)
@@ -32,6 +30,13 @@ where
     //the Bound for optionT, is optionT around the bound for the inner
     //monad when it has an option in it
     type Bound = OptionT<'a, <M as Bound<O<B>>>::Bound, PhantomData<B>>;
+
+    fn wrap(a: B) -> Self::Bound {
+        OptionT(
+            <M as Bound<O<B>>>::wrap(Some(a)),
+            PhantomData
+        )
+    }
 }
 
 impl<'a, M, A, B: 'a, F> Functor<A, B, F> for OptionT<'a, M, A>
@@ -64,16 +69,6 @@ where
         PhantomData<B>,
     >;
 
-    fn pure(a: C) -> Self::Bound {
-        OptionT(
-            //use the inner pure definition and put Some(a) into inner structure
-            <M as Applicative<O<A>, O<B>, O<C>, Box<dyn Fn(O<A>, O<B>) -> O<C> + 'a>>>::pure(Some(
-                a,
-            )),
-            PhantomData,
-        )
-    }
-
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         OptionT(
             //lift inner self and inner other using a function that utilizes
@@ -90,18 +85,6 @@ where
     M: Monad<O<A>, O<B>, Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>,
     F: Fn(A) -> Self::Bound + 'a,
 {
-    fn ret(a: B) -> Self::Bound {
-        OptionT(
-            //use the inner monad to return M(Some(a))
-            //we can't use the applicative instance for OptionT because
-            //the trait bounds in this impl don't guarentee M will have an instance of applicative
-            //only monad
-            <M as Monad<O<A>, O<B>, Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>>::ret(
-                Some(a),
-            ),
-            PhantomData,
-        )
-    }
 
     fn bind(self, f: F) -> Self::Bound {
         OptionT(
@@ -114,11 +97,7 @@ where
                 //If it has a value we run our function a -> OptionT then access internal value
                 //to satisfy type of inner bind fn
                 Some(b) => f(b).0,
-                None => <M as Monad<
-                    O<A>,
-                    O<B>,
-                    Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>,
-                >>::ret(None),
+                None => <M as Bound<O<B>>>::wrap(None)
             })),
             PhantomData,
         )
@@ -127,22 +106,12 @@ where
 
 impl<'a, M, A> OptionT<'a, M, A>
 where
-    //asserting to the cmopiler that M impls Bound and the type of Bound
-    //is the same as M which allows the new fn to return OptionT<M, A>(Self)
     M: Bound<O<A>, Bound = M>
-        //also that it is a Monad because ultimatley this is a Monad transformer
-        //and that is the context we want it to work in
-        + Monad<O<A>, O<A>, Box<dyn Fn(O<A>) -> <M as Bound<O<A>>>::Bound + 'a>>,
 {
     pub fn new(a: A) -> Self {
-
-        //less complicated version of OptionT::ret or OptionT::pure where type arguments
-        //are reduced
         OptionT(
-            <M as Monad<O<A>, O<A>, Box<dyn Fn(O<A>) -> <M as Bound<O<A>>>::Bound + 'a>>>::ret(
-                Some(a),
-            ),
-            PhantomData,
+            <M as Bound<O<A>>>::wrap(Some(a)),
+            PhantomData
         )
     }
 }
