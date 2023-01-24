@@ -1,9 +1,28 @@
 
-/// A helper trait to encapsulate higher kinded behavior and unify
+/// Trait that encapsulates higher kinded behavior. Helps to unify the
 /// return values of function from Functor, Applicative, and Monad trait
+/// and acts as pure or return
 pub trait Bound<B> {
-    type Bound;
 
+    /// Typically generic output type
+    ///
+    /// ```
+    /// # use towel::traits::Bound;
+    /// //Bound lets us encapsulate the idea that the Ouput: Vec<String> is related to the input:
+    /// //Vec<i32>
+    /// let a = <Vec<i32> as Bound<String>>::wrap("foo".to_string());
+    /// 
+    /// //[Some("foo")]
+    /// println!("{:?}", a);
+    type Bound;
+    
+    /// Wraps a value into some structure that is the type Bound
+    ///
+    /// ```
+    /// # use towel::traits::Bound;
+    /// let a = <Option<i32> as Bound<&'static str>>::wrap("hello");
+    ///
+    /// assert_eq!(a, Some("hello"));
     fn wrap(a: B) -> Self::Bound;
 }
 
