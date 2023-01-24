@@ -2,10 +2,15 @@ use crate::traits::Bound;
 
 /// Trait for function application embedded in a structure over another structure
 pub trait Applicative<A, B, C, F: Fn(A, B) -> C>: Bound<C> {
+
+    /// Another version of [Bound] that is applicative specific
     type Other;
-
+    
+    /// Lifts value into an applicative context
     fn pure(a: C) -> Self::Bound;
-
+    
+    /// Combines values in self and other with same structure with an arbitrary function
+    /// then reuttrns something with the same structure and combined values
     //taking advice from fp complete website
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound;
 }
