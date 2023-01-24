@@ -32,10 +32,9 @@ pub enum Either<A, B> {
 }
 
 impl<A, B, C> Bound<C> for Either<A, B> {
-
     type Bound = Either<A, C>;
 
-    fn wrap(a: C) -> Self::Bound{
+    fn wrap(a: C) -> Self::Bound {
         Right(a)
     }
 }
@@ -62,7 +61,6 @@ impl<A, B, C, D, F: Fn(B, C) -> D> Applicative<B, C, D, F> for Either<A, B> {
 }
 
 impl<A, B, C, F: Fn(B) -> Self::Bound> Monad<B, C, F> for Either<A, B> {
-
     fn bind(self, f: F) -> Self::Bound {
         match self {
             Left(a) => Left(a),

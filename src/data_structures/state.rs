@@ -8,7 +8,7 @@ use crate::prelude::{Applicative, Bound, Functor, Monad};
 /// ```
 /// # use towel::data_structures::State;
 /// # use towel::traits::{Monad, Functor};
-/// 
+///
 /// //|_| ((), 3)
 /// let initial = State::<i32, i32>::put(3i32);
 ///
@@ -24,13 +24,12 @@ pub struct State<'a, S, A>(Box<dyn FnOnce(S) -> (A, S) + 'a>);
 impl<'a, S: 'a, A: 'a, B: 'a> Bound<B> for State<'a, S, A> {
     type Bound = State<'a, S, B>;
 
-    fn wrap(a: B) -> Self::Bound{
+    fn wrap(a: B) -> Self::Bound {
         State(Box::new(move |s| (a, s)))
     }
 }
 
 impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + Fn(A) -> B> Functor<A, B, F> for State<'a, S, A> {
-
     fn fmap(self, f: F) -> Self::Bound {
         State(Box::new(move |s| {
             let (a, ns) = self.eval(s);
@@ -68,12 +67,11 @@ where
 }
 
 impl<'a, S: 'a, A: 'a> State<'a, S, A> {
-    
     /// Sets an initial state
     pub fn put(s: S) -> State<'a, S, ()> {
         State(Box::new(move |_| ((), s)))
     }
-    
+
     /// Runs the state processor on some initial state
     pub fn eval(self, s: S) -> (A, S) {
         (self.0)(s)
@@ -82,10 +80,8 @@ impl<'a, S: 'a, A: 'a> State<'a, S, A> {
 
 //Got to have some way to copy that state
 impl<'a, S: 'a + Clone, A: 'a> State<'a, S, A> {
-    
     /// Sets result value to state
-    pub fn get() -> State<'a, S, S>{
+    pub fn get() -> State<'a, S, S> {
         State(Box::new(|s| (s.clone(), s)))
     }
 }
-

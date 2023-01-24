@@ -4,7 +4,6 @@ use crate::traits::Semigroup;
 ///
 ///
 pub trait Monoid: Semigroup {
-
     /// Returns an identity value
     ///
     /// ```

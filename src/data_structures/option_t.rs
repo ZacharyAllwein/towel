@@ -5,7 +5,7 @@ use std::marker::PhantomData;
 type O<A> = Option<A>;
 
 /// An Option Transformer. Composition of a Monadic type and
-/// Option. 
+/// Option.
 ///
 /// # Examples
 ///
@@ -14,7 +14,7 @@ type O<A> = Option<A>;
 /// ```
 /// # use towel::data_structures::{Either, OptionT};
 /// let x = OptionT::<Either<Option<i32>, Option<i32>>, i32>::new(3);
-/// 
+///
 /// //OptionT(Right(Some(3)), PhantomData)
 /// println!("{:?}", x);
 ///
@@ -32,10 +32,7 @@ where
     type Bound = OptionT<'a, <M as Bound<O<B>>>::Bound, PhantomData<B>>;
 
     fn wrap(a: B) -> Self::Bound {
-        OptionT(
-            <M as Bound<O<B>>>::wrap(Some(a)),
-            PhantomData
-        )
+        OptionT(<M as Bound<O<B>>>::wrap(Some(a)), PhantomData)
     }
 }
 
@@ -85,7 +82,6 @@ where
     M: Monad<O<A>, O<B>, Box<dyn Fn(O<A>) -> <M as Bound<O<B>>>::Bound + 'a>>,
     F: Fn(A) -> Self::Bound + 'a,
 {
-
     fn bind(self, f: F) -> Self::Bound {
         OptionT(
             //uses inner monads bind and makes a function that fits that signature
@@ -97,7 +93,7 @@ where
                 //If it has a value we run our function a -> OptionT then access internal value
                 //to satisfy type of inner bind fn
                 Some(b) => f(b).0,
-                None => <M as Bound<O<B>>>::wrap(None)
+                None => <M as Bound<O<B>>>::wrap(None),
             })),
             PhantomData,
         )
@@ -106,12 +102,9 @@ where
 
 impl<'a, M, A> OptionT<'a, M, A>
 where
-    M: Bound<O<A>, Bound = M>
+    M: Bound<O<A>, Bound = M>,
 {
     pub fn new(a: A) -> Self {
-        OptionT(
-            <M as Bound<O<A>>>::wrap(Some(a)),
-            PhantomData
-        )
+        OptionT(<M as Bound<O<A>>>::wrap(Some(a)), PhantomData)
     }
 }

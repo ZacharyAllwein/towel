@@ -1,9 +1,7 @@
-
 /// Trait that encapsulates higher kinded behavior. Helps to unify the
 /// return values of function from Functor, Applicative, and Monad trait
 /// and acts as pure or return
 pub trait Bound<B> {
-
     /// Typically generic output type
     ///
     /// ```
@@ -11,11 +9,11 @@ pub trait Bound<B> {
     /// //Bound lets us encapsulate the idea that the Ouput: Vec<String> is related to the input:
     /// //Vec<i32>
     /// let a = <Vec<i32> as Bound<String>>::wrap("foo".to_string());
-    /// 
+    ///
     /// //[Some("foo")]
     /// println!("{:?}", a);
     type Bound;
-    
+
     /// Wraps a value into some structure that is the type Bound
     ///
     /// ```
@@ -29,7 +27,7 @@ pub trait Bound<B> {
 impl<A, B> Bound<B> for Vec<A> {
     type Bound = Vec<B>;
 
-    fn wrap(a: B) -> Self::Bound{
+    fn wrap(a: B) -> Self::Bound {
         vec![a]
     }
 }

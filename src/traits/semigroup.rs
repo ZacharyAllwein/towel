@@ -1,7 +1,6 @@
 /// A interface for types in which 2 elements of that type can be combined to form
 /// one element of that type
 pub trait Semigroup: Sized {
-
     /// Combines two elements of one type into one element of that type
     ///
     /// ```

@@ -2,7 +2,6 @@ use crate::traits::Bound;
 
 /// Trait for function application embedded in a structure over another structure
 pub trait Applicative<A, B, C, F: Fn(A, B) -> C>: Bound<C> {
-
     /// Another version of [Bound] that is applicative specific
     type Other;
 
@@ -14,7 +13,7 @@ pub trait Applicative<A, B, C, F: Fn(A, B) -> C>: Bound<C> {
     /// let v = vec![1, 2];
     /// let u = vec![3, 4];
     ///
-    /// //vecs are combined using fn yielding new vec 
+    /// //vecs are combined using fn yielding new vec
     /// //that is a product of the original two
     /// assert_eq!(v.lift_a2(u, |a, b| (a, b)), vec![(1, 3), (1, 4), (2, 3), (2,4)]);
     //taking advice from fp complete website
@@ -22,7 +21,6 @@ pub trait Applicative<A, B, C, F: Fn(A, B) -> C>: Bound<C> {
 }
 
 impl<A: Clone, B: Clone, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Vec<A> {
-
     type Other = Vec<B>;
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
@@ -34,7 +32,6 @@ impl<A: Clone, B: Clone, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Vec<A>
 }
 
 impl<A, B, C, F: Fn(A, B) -> C> Applicative<A, B, C, F> for Option<A> {
-
     type Other = Option<B>;
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {

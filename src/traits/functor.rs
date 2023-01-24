@@ -8,7 +8,7 @@ pub trait Functor<A, B, F: Fn(A) -> B>: Bound<B> {
     /// ```
     /// # use towel::traits::Functor;
     /// let v = vec![1, 2, 3];
-    /// 
+    ///
     /// //lifts fn over vec changing values but leaving structure
     /// //the same
     /// assert_eq!(v.fmap(|x| (x + 1).to_string()), vec!["2".to_string(), "3".to_string(), "4".to_string()]);
