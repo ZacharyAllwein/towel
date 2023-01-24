@@ -32,6 +32,10 @@ Trying to get things of this list
 * Reader
 * Various Transformers and other datatypes
 
+### Notes
+* Unstable features(things I change every other day) have tests in the tests folders
+everything else will have doc tests
+
 
 
 
