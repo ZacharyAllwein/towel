@@ -9,7 +9,7 @@ pub trait Cons<A> {
     /// Basic Usage:
     ///
     /// ```
-    /// use towel::traits::Cons;
+    /// # use towel::traits::Cons;
     ///
     /// let v = vec![1, 2, 3];
     ///

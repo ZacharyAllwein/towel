@@ -1,6 +1,11 @@
 Towel is a functional programming library for Rust
 (Just a small project I'm playing with as I'm learning haskell)
 
+### ToDoList
+* Result trait impls
+* Shift trait docs to match monad
+* Documentation for data structures
+
 
 ### Implemented Stuff
 * Semigroup
