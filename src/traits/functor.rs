@@ -24,9 +24,6 @@ impl<A, B, F: Fn(A) -> B> Functor<A, B, F> for Vec<A> {
 
 impl<A, B, F: FnOnce(A) -> B> Functor<A, B, F> for Option<A> {
     fn fmap(self, f: F) -> Self::Bound {
-        match self {
-            Some(x) => Some(f(x)),
-            _ => None,
-        }
+        self.map(f)
     }
 }

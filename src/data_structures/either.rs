@@ -68,3 +68,79 @@ impl<A, B, C, F: FnOnce(B) -> Self::Bound> Monad<B, C, F> for Either<A, B> {
         }
     }
 }
+
+impl<A, B> Either<A, B>{
+    
+    /// Idiomatic map for either. Maps value inside a Right variant of Either,
+    /// leaving Lefts unchanged
+    ///
+    /// ```
+    /// # use towel::data_structures::Either::{self, Left, Right};
+    /// let f = |x: i32| (x + 1).to_string();
+    ///
+    /// assert_eq!(Right::<Vec<i32>, i32>(3).map(f), Right("4".to_string()));
+    /// assert_eq!(Left::<Vec<i32>, i32>(vec![2]).map(f), Left(vec![2]));
+    //just wrapping fmap so data structure can be used idiomatically
+    pub fn map<F: FnOnce(B) -> C, C>(self, f: F) -> Either<A, C>{
+        self.fmap(f)
+    }
+    
+    /// Takes two fns and applies based on Either variant of self
+    ///
+    /// ```
+    /// # use towel::data_structures::Either::{self, Left, Right};
+    /// let l = Left("hello");;
+    /// let r = Right("world");
+    ///
+    /// let f: fn(Either<&'static str, &'static str>) -> &'static str = 
+    ///     |x| x.either(|_| "world", |_| "hello");
+    /// 
+    /// assert_eq!(f(l), "world");
+    /// assert_eq!(f(r), "hello");
+    pub fn either<F, G, C>(self, f: F, g: G) -> C
+    where
+        F: Fn(A) -> C,
+        G: Fn(B) -> C,
+    {
+        match self{
+            Left(a) => f(a),
+            Right(b) => g(b)
+        }
+    }
+    
+    
+    /// Get value out of left or return default value
+    ///
+    /// ```
+    /// # use towel::data_structures::Either::{Left, Right};
+    /// //returns value out of left
+    /// assert_eq!(Left::<i32, &'static str>(3).from_left(2), 3);
+    ///
+    /// //uses default value provided
+    /// assert_eq!(Right::<i32, &'static str>("hello").from_left(2), 2);
+    pub fn from_left(self, a: A) -> A{
+
+        match self{
+            Left(b) => b,
+            Right(_) => a
+        }
+    }
+
+    /// Get value out of right or return default value
+    ///
+    /// ```
+    /// # use towel::data_structures::Either::{Left, Right};
+    /// //returns value out of right
+    /// assert_eq!(Right::<i32, &'static str>("hello").from_right("world"), "hello");
+    ///
+    /// //uses default value provided
+    /// assert_eq!(Left::<i32, &'static str>(3).from_right("world"), "world");
+    pub fn from_right(self, a: B) -> B{
+
+        match self{
+            Left(_) => a,
+            Right(b) => b
+        }
+    }
+
+}

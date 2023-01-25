@@ -33,12 +33,10 @@ Trying to get things of this list
 * Everything Else
 
 ### Planned Stuff
-* Combinators(Compose, Pipe, Etc..)
 * Reader
 * Do macro
 * Partial application
 * Point free support
-* Reader
 * Various Transformers and other datatypes
 
 ### Notes
