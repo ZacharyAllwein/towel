@@ -5,8 +5,8 @@ pub fn identity<A>(a: A) -> A {
 }
 
 /// constant always returns the first value passed into it
-pub fn constant<A, B>(a: A, _: B) -> A {
-    a
+pub fn constant<A, B>(a: A) -> impl FnOnce(B) -> A {
+    move |_| a
 }
 
 /// takes a fn and a value and applies the fn to value
@@ -48,7 +48,6 @@ where
 {
     move |a| g(f(a))
 }
-
 
 /// takes a function with two args and allows the second arg to be
 /// substituted with a function application on the first arg

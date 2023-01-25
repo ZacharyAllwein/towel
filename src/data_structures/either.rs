@@ -1,4 +1,4 @@
-use crate::prelude::{Applicative, Bound, Functor, Left, Monad, Right};
+use crate::prelude::{constant, identity, Applicative, Bound, Functor, Left, Monad, Right};
 
 /// A enum similar to haskells Either type represents the possibility of
 /// being of type A ([Left]) or type B ([Right])
@@ -69,8 +69,7 @@ impl<A, B, C, F: FnOnce(B) -> Self::Bound> Monad<B, C, F> for Either<A, B> {
     }
 }
 
-impl<A, B> Either<A, B>{
-    
+impl<A, B> Either<A, B> {
     /// Idiomatic map for either. Maps value inside a Right variant of Either,
     /// leaving Lefts unchanged
     ///
@@ -81,10 +80,10 @@ impl<A, B> Either<A, B>{
     /// assert_eq!(Right::<Vec<i32>, i32>(3).map(f), Right("4".to_string()));
     /// assert_eq!(Left::<Vec<i32>, i32>(vec![2]).map(f), Left(vec![2]));
     //just wrapping fmap so data structure can be used idiomatically
-    pub fn map<F: FnOnce(B) -> C, C>(self, f: F) -> Either<A, C>{
+    pub fn map<F: FnOnce(B) -> C, C>(self, f: F) -> Either<A, C> {
         self.fmap(f)
     }
-    
+
     /// Takes two fns and applies based on Either variant of self
     ///
     /// ```
@@ -92,23 +91,42 @@ impl<A, B> Either<A, B>{
     /// let l = Left("hello");;
     /// let r = Right("world");
     ///
-    /// let f: fn(Either<&'static str, &'static str>) -> &'static str = 
-    ///     |x| x.either(|_| "world", |_| "hello");
-    /// 
-    /// assert_eq!(f(l), "world");
-    /// assert_eq!(f(r), "hello");
+    /// let f: fn(Either<&'static str, &'static str>) -> Option<&'static str> =
+    ///     |x| x.either(|a| Some(a), |_| None);
+    ///
+    /// assert_eq!(f(l), Some("hello"));
+    /// assert_eq!(f(r), None);
     pub fn either<F, G, C>(self, f: F, g: G) -> C
     where
-        F: Fn(A) -> C,
-        G: Fn(B) -> C,
+        F: FnOnce(A) -> C,
+        G: FnOnce(B) -> C,
     {
-        match self{
+        match self {
             Left(a) => f(a),
-            Right(b) => g(b)
+            Right(b) => g(b),
         }
     }
     
-    
+    /// Allows a choice between two values of the same type
+    /// to be made based on whether an Either is Left or Right.
+    /// Ignores data inside variant.
+    ///
+    /// ```
+    /// # use towel::data_structures::Either::{self, Left, Right};
+    /// let l = Left(10);
+    /// let r = Right(20);
+    ///
+    /// let f: fn(Either<i32, i32>) -> &'static str = |x| x.choice("foo", "bar");
+    ///
+    /// assert_eq!(f(l), "foo");
+    /// assert_eq!(f(r), "bar");
+    pub fn choice<C>(&self, a: C, b: C) -> C{
+        match self {
+            Left(_) => a,
+            Right(_) => b,
+        }
+    }
+
     /// Get value out of left or return default value
     ///
     /// ```
@@ -118,12 +136,8 @@ impl<A, B> Either<A, B>{
     ///
     /// //uses default value provided
     /// assert_eq!(Right::<i32, &'static str>("hello").from_left(2), 2);
-    pub fn from_left(self, a: A) -> A{
-
-        match self{
-            Left(b) => b,
-            Right(_) => a
-        }
+    pub fn from_left(self, a: A) -> A {
+        self.either(identity, constant(a))
     }
 
     /// Get value out of right or return default value
@@ -135,12 +149,17 @@ impl<A, B> Either<A, B>{
     ///
     /// //uses default value provided
     /// assert_eq!(Left::<i32, &'static str>(3).from_right("world"), "world");
-    pub fn from_right(self, a: B) -> B{
-
-        match self{
-            Left(_) => a,
-            Right(b) => b
-        }
+    pub fn from_right(self, a: B) -> B {
+        self.either(constant(a), identity)
     }
 
+    /// Return true if self is Left variant else false
+    pub fn is_left(&self) -> bool {
+        self.choice(true, false)
+    }
+
+    /// Return true if self is Right variant else false
+    pub fn is_right(&self) -> bool {
+        self.choice(false, true)
+    }
 }
