@@ -18,6 +18,7 @@ Towel is a functional programming library for Rust
 * State
 * Option Transformer
 * Cons Trait
+* Combinators
 
 ### Documented Stuff
 * Semigroup
@@ -30,13 +31,13 @@ Towel is a functional programming library for Rust
 
 ### Undocumented Stuff
 Trying to get things of this list
-* Everything Else
+* State
+* Option Transformer
+* Combinators
 
 ### Planned Stuff
 * Reader
 * Do macro
-* Partial application
-* Point free support
 * Various Transformers and other datatypes
 
 ### Notes
