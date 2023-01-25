@@ -4,9 +4,9 @@ pub fn identity<A>(a: A) -> A {
     a
 }
 
-/// constant always returns the first value passed into it
-pub fn constant<A, B>(a: A) -> impl FnOnce(B) -> A {
-    move |_| a
+/// constant returns the first value passed into it
+pub fn constant<A, B>(a: A, _b: B) -> A{
+    a
 }
 
 /// takes a fn and a value and applies the fn to value
@@ -20,77 +20,77 @@ pub fn thrush<A, F: FnOnce(A) -> B, B>(a: A, f: F) -> B {
 }
 
 /// passes one arg to a fn that takes two args twice
-pub fn duplication<F: Fn(A, A) -> B, A: Clone, B>(f: F) -> impl Fn(A) -> B {
-    move |a| f(a.clone(), a)
+pub fn duplication<F: FnOnce(A, A) -> B, A: Clone, B>(f: F, a: A) -> B{
+    f(a.clone(), a)
 }
 
 /// flips arguments for a fn around
-pub fn flip<F: Fn(A, B) -> C, A, B, C>(f: F) -> impl Fn(B, A) -> C {
-    move |b, a| f(a, b)
+pub fn flip<F: FnOnce(A, B) -> C, A, B, C>(f: F, b: B, a: A) -> C{
+    f(a, b)
 }
 
 /// composes two function one which takes the output of the other
 /// creating a new fn
-pub fn compose<F, G, A, B, C>(f: F, g: G) -> impl Fn(A) -> C
+pub fn compose<F, G, A, B, C>(f: F, g: G, a: A) -> C
 where
-    F: Fn(B) -> C,
-    G: Fn(A) -> B,
+    F: FnOnce(B) -> C,
+    G: FnOnce(A) -> B,
 {
-    move |a| f(g(a))
+    f(g(a))
 }
 
 /// like composition but less similar to the mathematical definition
 /// works like unix |, passes output to input of next fn
-pub fn pipe<F, G, A, B, C>(f: F, g: G) -> impl Fn(A) -> C
+pub fn pipe<F, G, A, B, C>(f: F, g: G, a: A) -> C
 where
-    F: Fn(A) -> B,
-    G: Fn(B) -> C,
+    F: FnOnce(A) -> B,
+    G: FnOnce(B) -> C,
 {
-    move |a| g(f(a))
+    g(f(a))
 }
 
 /// takes a function with two args and allows the second arg to be
 /// substituted with a function application on the first arg
-pub fn substitution<F, G, A, B, C>(f: F, g: G) -> impl Fn(A) -> C
+pub fn substitution<F, G, A, B, C>(f: F, g: G, a: A) -> C
 where
     A: Clone,
-    F: Fn(A, B) -> C,
-    G: Fn(A) -> B,
+    F: FnOnce(A, B) -> C,
+    G: FnOnce(A) -> B,
 {
-    move |a| f(a.clone(), g(a))
+    f(a.clone(), g(a))
 }
 
 /// allows composition where
 /// you need to have some constant environment(A)
 /// in a function
-pub fn chain<F, G, A, B, C>(f: F, g: G) -> impl Fn(A) -> C
+pub fn chain<F, G, A, B, C>(f: F, g: G, a: A) -> C
 where
     A: Clone,
-    F: Fn(A) -> B,
-    G: Fn(B, A) -> C,
+    F: FnOnce(A) -> B,
+    G: FnOnce(B, A) -> C,
 {
-    move |a| g(f(a.clone()), a)
+    g(f(a.clone()), a)
 }
 
 /// takes two functions that take same arg, but have different outputs
 /// and a function that combines their outputs,
 /// and returns a fn that takes one input and returns the combined output
-pub fn converge<F, G, H, A, B, C, D>(f: F, g: G, h: H) -> impl Fn(A) -> D
+pub fn converge<F, G, H, A, B, C, D>(f: F, g: G, h: H, a: A) -> D
 where
     A: Clone,
-    F: Fn(B, C) -> D,
-    G: Fn(A) -> B,
-    H: Fn(A) -> C,
+    F: FnOnce(B, C) -> D,
+    G: FnOnce(A) -> B,
+    H: FnOnce(A) -> C,
 {
-    move |a| f(g(a.clone()), h(a))
+    f(g(a.clone()), h(a))
 }
 
 /// a sister to converge. returns a fn that takes two args runs them through a
 /// unary fn, then merges their outputs with a provided binary fn
-pub fn psi<F, G, A, B, C>(f: F, g: G) -> impl Fn(A, A) -> C
+pub fn psi<F, G, A, B, C>(f: F, g: G, a: A, b: A) -> C
 where
-    F: Fn(B, B) -> C,
+    F: FnOnce(B, B) -> C,
     G: Fn(A) -> B,
 {
-    move |a, b| f(g(a), g(b))
+    f(g(a), g(b))
 }

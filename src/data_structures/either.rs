@@ -1,4 +1,4 @@
-use crate::prelude::{constant, identity, Applicative, Bound, Functor, Left, Monad, Right};
+use crate::prelude::{identity, Applicative, Bound, Functor, Left, Monad, Right};
 
 /// A enum similar to haskells Either type represents the possibility of
 /// being of type A ([Left]) or type B ([Right])
@@ -137,7 +137,7 @@ impl<A, B> Either<A, B> {
     /// //uses default value provided
     /// assert_eq!(Right::<i32, &'static str>("hello").from_left(2), 2);
     pub fn from_left(self, a: A) -> A {
-        self.either(identity, constant(a))
+        self.either(identity, move |_| a)
     }
 
     /// Get value out of right or return default value
@@ -150,7 +150,7 @@ impl<A, B> Either<A, B> {
     /// //uses default value provided
     /// assert_eq!(Left::<i32, &'static str>(3).from_right("world"), "world");
     pub fn from_right(self, a: B) -> B {
-        self.either(constant(a), identity)
+        self.either(move |_| a, identity)
     }
 
     /// Return true if self is Left variant else false
