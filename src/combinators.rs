@@ -5,7 +5,7 @@ pub fn identity<A>(a: A) -> A {
 }
 
 /// constant returns the first value passed into it
-pub fn constant<A, B>(a: A, _b: B) -> A{
+pub fn constant<A, B>(a: A, _b: B) -> A {
     a
 }
 
@@ -20,12 +20,12 @@ pub fn thrush<A, F: FnOnce(A) -> B, B>(a: A, f: F) -> B {
 }
 
 /// passes one arg to a fn that takes two args twice
-pub fn duplication<F: FnOnce(A, A) -> B, A: Clone, B>(f: F, a: A) -> B{
+pub fn duplication<F: FnOnce(A, A) -> B, A: Clone, B>(f: F, a: A) -> B {
     f(a.clone(), a)
 }
 
 /// flips arguments for a fn around
-pub fn flip<F: FnOnce(A, B) -> C, A, B, C>(f: F, b: B, a: A) -> C{
+pub fn flip<F: FnOnce(A, B) -> C, A, B, C>(f: F, b: B, a: A) -> C {
     f(a, b)
 }
 

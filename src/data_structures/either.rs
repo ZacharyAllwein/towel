@@ -106,7 +106,7 @@ impl<A, B> Either<A, B> {
             Right(b) => g(b),
         }
     }
-    
+
     /// Allows a choice between two values of the same type
     /// to be made based on whether an Either is Left or Right.
     /// Ignores data inside variant.
@@ -120,7 +120,7 @@ impl<A, B> Either<A, B> {
     ///
     /// assert_eq!(f(l), "foo");
     /// assert_eq!(f(r), "bar");
-    pub fn choice<C>(&self, a: C, b: C) -> C{
+    pub fn choice<C>(&self, a: C, b: C) -> C {
         match self {
             Left(_) => a,
             Right(_) => b,

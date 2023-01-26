@@ -39,6 +39,8 @@ Trying to get things of this list
 * Reader
 * Do macro
 * Various Transformers and other datatypes
+* Foldable
+* Traversable
 
 ### Notes
 * Unstable features(things I change every other day) have tests in the tests folders
