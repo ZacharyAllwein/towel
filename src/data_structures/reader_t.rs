@@ -16,6 +16,8 @@ where
     type Bound = ReaderT<'a, R, AsBound<M, B>, PhantomData<B>>;
 
     fn wrap(a: B) -> Self::Bound {
+        //wrap up internal value in monad and return 
+        //as a reader (r -> m a)
         ReaderT(Box::new(move |_| <M as Bound<B>>::wrap(a)), PhantomData)
     }
 }
@@ -29,6 +31,8 @@ where
     F: 'a + FnOnce(A) -> B,
 {
     fn fmap(self, f: F) -> Self::Bound {
+
+        //eval self then map internal value with f
         ReaderT(Box::new(move |r| self.eval(r).fmap(f)), PhantomData)
     }
 }
@@ -45,11 +49,16 @@ where
     C: 'a,
     F: 'a + FnOnce(A, B) -> C,
 {
+    //use the other type on the internal applicative to 
+    //create other type for ReaderT
     type Other = ReaderT<'a, R, AsOther<M, A, B, C, F>, PhantomData<B>>;
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         ReaderT(
             Box::new(move |r| {
+
+                //pass arg to self and other and combine results
+                //with provided f
                 let a = self.eval(r.clone());
                 let b = other.eval(r);
 
@@ -70,6 +79,8 @@ where
 {
     fn bind(self, f: F) -> Self::Bound {
         ReaderT(
+            //eval self then bind resulted monad with f
+            //and return m b by evaling the returned ReaderT
             Box::new(move |r| self.eval(r.clone()).bind(Box::new(move |a| f(a).eval(r)))),
             PhantomData,
         )
@@ -77,6 +88,8 @@ where
 }
 
 impl<'a, R, M, A> ReaderT<'a, R, M, A> {
+
+    /// Evalueate the contained fn by passing in an environment: R
     pub fn eval(self, r: R) -> M {
         (self.0)(r)
     }

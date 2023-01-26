@@ -23,7 +23,9 @@ pub struct State<'a, S, A>(Box<dyn FnOnce(S) -> (A, S) + 'a>);
 
 impl<'a, S: 'a, A: 'a, B: 'a> Bound<B> for State<'a, S, A> {
     type Bound = State<'a, S, B>;
-
+    
+    //sets a state processor that returns 
+    //the value a, as well as the passed in state
     fn wrap(a: B) -> Self::Bound {
         State(Box::new(move |s| (a, s)))
     }
@@ -32,6 +34,9 @@ impl<'a, S: 'a, A: 'a, B: 'a> Bound<B> for State<'a, S, A> {
 impl<'a, S: 'a, A: 'a, B: 'a, F: 'a + FnOnce(A) -> B> Functor<A, B, F> for State<'a, S, A> {
     fn fmap(self, f: F) -> Self::Bound {
         State(Box::new(move |s| {
+
+            //self is evaled and
+            //returned a is mapped with f
             let (a, ns) = self.eval(s);
             (f(a), ns)
         }))
@@ -46,6 +51,8 @@ where
 
     fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
         State(Box::new(move |s| {
+
+
             let (a, ns) = self.eval(s);
             let (b, fs) = other.eval(ns);
 

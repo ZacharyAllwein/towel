@@ -17,6 +17,7 @@ Towel is a functional programming library for Rust
 * Either
 * State
 * Option Transformer
+* Reader Transformer
 * Cons Trait
 * Combinators
 
@@ -34,6 +35,7 @@ Trying to get things of this list
 * State
 * Option Transformer
 * Combinators
+* Reader Transformer
 
 ### Planned Stuff
 * Reader

@@ -6,7 +6,6 @@ pub mod prelude {
     use super::*;
     pub use combinators::*;
     pub use data_structures::Either::{self, Left, Right};
-    pub use data_structures::State;
     pub use traits::Applicative;
     pub use traits::Bound;
     pub use traits::Cons;
