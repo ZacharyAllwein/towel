@@ -2,7 +2,6 @@ Towel is a functional programming library for Rust
 (Just a small project I'm playing with as I'm learning haskell)
 
 ### ToDoList
-* Result trait impls
 * Documentation for data structures
 * Examples for combinators
 
@@ -16,6 +15,7 @@ Towel is a functional programming library for Rust
 * Bound
 * Either
 * State
+* Reader
 * Option Transformer
 * Reader Transformer
 * Cons Trait
@@ -36,17 +36,21 @@ Trying to get things of this list
 * Option Transformer
 * Combinators
 * Reader Transformer
+* Reader
+* Foldable
 
 ### Planned Stuff
-* Reader
 * Do macro
 * Various Transformers and other datatypes
-* Foldable
-* Traversable
+* Either Transformer
+* Result Transformer
 
 ### Notes
 * Unstable features(things I change every other day) have tests in the tests folders
 everything else will have doc tests
+* Pretty sure rust's iterators provide a good reason to not 
+implement Foldable or Traversable not that this project is about
+asking whether or not you should
 
 
 

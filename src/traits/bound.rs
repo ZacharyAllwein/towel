@@ -39,3 +39,11 @@ impl<A, B> Bound<B> for Option<A> {
         Some(a)
     }
 }
+
+impl<A, B, C> Bound<C> for Result<A, B> {
+    type Bound = Result<C, B>;
+
+    fn wrap(a: C) -> Self::Bound {
+        Ok(a)
+    }
+}

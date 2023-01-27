@@ -27,3 +27,9 @@ impl<A, B, F: FnOnce(A) -> B> Functor<A, B, F> for Option<A> {
         self.map(f)
     }
 }
+
+impl<A, B, C, F: FnOnce(A) -> C> Functor<A, C, F> for Result<A, B> {
+    fn fmap(self, f: F) -> Self::Bound {
+        self.map(f)
+    }
+}

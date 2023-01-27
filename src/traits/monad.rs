@@ -29,3 +29,12 @@ impl<A, B, F: FnOnce(A) -> Self::Bound> Monad<A, B, F> for Option<A> {
         }
     }
 }
+
+impl<A, B, C, F: FnOnce(A) -> Self::Bound> Monad<A, C, F> for Result<A, B> {
+    fn bind(self, f: F) -> Self::Bound {
+        match self {
+            Ok(a) => f(a),
+            Err(e) => Err(e),
+        }
+    }
+}

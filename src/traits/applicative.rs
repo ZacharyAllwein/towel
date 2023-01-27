@@ -42,3 +42,15 @@ impl<A, B, C, F: FnOnce(A, B) -> C> Applicative<A, B, C, F> for Option<A> {
         }
     }
 }
+
+impl<A, B, C, D, F: FnOnce(A, C) -> D> Applicative<A, C, D, F> for Result<A, B> {
+    type Other = Result<C, B>;
+
+    fn lift_a2(self, other: Self::Other, f: F) -> Self::Bound {
+        match (self, other) {
+            (Err(e), _) => Err(e),
+            (_, Err(e)) => Err(e),
+            (Ok(a), Ok(b)) => Ok(f(a, b)),
+        }
+    }
+}
