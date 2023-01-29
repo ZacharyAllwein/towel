@@ -1,5 +1,4 @@
-Towel is a functional programming library for Rust
-(Just a small project I'm playing with as I'm learning haskell)
+Just a small project I'm playing with as I'm learning haskell
 
 ### ToDoList
 * Documentation for data structures
@@ -31,7 +30,6 @@ Towel is a functional programming library for Rust
 * Monad
 
 ### Undocumented Stuff
-Trying to get things of this list
 * State
 * Option Transformer
 * Combinators
