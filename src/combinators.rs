@@ -1,3 +1,4 @@
+
 /// id returns the same value that was passed into it
 /// unchanged
 pub fn identity<A>(a: A) -> A {
@@ -28,6 +29,7 @@ pub fn duplication<F: FnOnce(A, A) -> B, A: Clone, B>(f: F, a: A) -> B {
 pub fn flip<F: FnOnce(A, B) -> C, A, B, C>(f: F, b: B, a: A) -> C {
     f(a, b)
 }
+
 
 /// composes two function one which takes the output of the other
 /// creating a new fn

@@ -1,3 +1,5 @@
+use crate::traits::Monoid;
+
 /// Trait that encapsulates higher kinded behavior. Helps to unify the
 /// return values of function from Functor, Applicative, and Monad trait
 /// and acts as pure or return
@@ -45,5 +47,14 @@ impl<A, B, C> Bound<C> for Result<A, B> {
 
     fn wrap(a: C) -> Self::Bound {
         Ok(a)
+    }
+}
+
+
+impl<A: Monoid, B, C> Bound<C> for (A, B) {
+    type Bound = (A, C);
+
+    fn wrap(a: C) -> Self::Bound {
+        (A::empty(), a)
     }
 }
